@@ -109,11 +109,38 @@ RUN cd /opt/caffe && make pycaffe
 # Make + run tests
 RUN cd /opt/caffe && make test && make runtest
 
+# ssh
+RUN mkdir /root/.ssh/ && touch /root/.ssh/authorized_keys
+
+# add caffe user
+RUN useradd -m -d /home/caffe -s /bin/bash caffe \
+ && echo "caffe:caffe" | chpasswd \
+ && mkdir /home/caffe/.ssh \
+ && chmod 700 /home/caffe/.ssh \
+ && cp /root/.ssh/authorized_keys /home/caffe/.ssh \
+ && chmod 600 /home/caffe/.ssh/authorized_keys \
+ && chown -R caffe:caffe /home/caffe/.ssh
+RUN echo "caffe ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+RUN echo 'export PATH=$PATH:/opt/caffe/.build_release/tools' >> /home/caffe/.bashrc
+RUN echo 'PYTHONPATH=$PYTHONPATH/opt/caffe/python' >> /home/caffe/.bashrc
+
+# various files are created by root. Change ownership
+RUN chown caffe:caffe -R /opt/caffe/
+
+# add utility
+RUN apt-get install -y vim
+
+# Disable driver. This is workarou for error on libdc1394
+# This error happen when creating mnist data
+# See: http://stackoverflow.com/questions/12689304/ctypes-error-libdc1394-error-failed-to-initialize-libdc1394/26028597#26028597
+RUN ln /dev/null /dev/raw1394
+
 # sshd
 # https://docs.docker.com/examples/running_ssh_service/
 RUN apt-get update && apt-get install -y openssh-server
 RUN mkdir /var/run/sshd
-RUN echo 'root:screencast' | chpasswd
+RUN echo 'root:root' | chpasswd
 RUN sed -i 's/PermitRootLogin without-password/PermitRootLogin yes/' /etc/ssh/sshd_config
 
 # SSH login fix. Otherwise user is kicked off after login
