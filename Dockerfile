@@ -158,6 +158,7 @@ RUN useradd -m -d /home/chainer -s /bin/bash chainer \
 RUN echo "chainer ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 # setup chainer
+RUN pip install scikit-learn
 RUN pip install chainer
 USER chainer
 WORKDIR /home/chainer
