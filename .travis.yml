@@ -1,1 +1,1 @@
-script: cd caffe && docker build -t caffe-cpu .
+script: docker build -t caffe-cpu .
