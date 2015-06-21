@@ -4,7 +4,6 @@
 
 FROM ubuntu:14.04
 
-
 ENV PYTHONPATH /opt/caffe/python
 
 # Add caffe binaries to path
@@ -109,32 +108,16 @@ RUN cd /opt/caffe && make pycaffe
 # Make + run tests
 RUN cd /opt/caffe && make test && make runtest
 
-# ssh
-RUN mkdir /root/.ssh/ && touch /root/.ssh/authorized_keys
-
-# add caffe user
-RUN useradd -m -d /home/caffe -s /bin/bash caffe \
- && echo "caffe:caffe" | chpasswd \
- && mkdir /home/caffe/.ssh \
- && chmod 700 /home/caffe/.ssh \
- && cp /root/.ssh/authorized_keys /home/caffe/.ssh \
- && chmod 600 /home/caffe/.ssh/authorized_keys \
- && chown -R caffe:caffe /home/caffe/.ssh
-RUN echo "caffe ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-
-RUN echo 'export PATH=$PATH:/opt/caffe/.build_release/tools' >> /home/caffe/.bashrc
-RUN echo 'PYTHONPATH=$PYTHONPATH/opt/caffe/python' >> /home/caffe/.bashrc
-
-# various files are created by root. Change ownership
-RUN chown caffe:caffe -R /opt/caffe/
-
-# add utility
-RUN apt-get install -y vim
-
 # Disable driver. This is workarou for error on libdc1394
 # This error happen when creating mnist data
 # See: http://stackoverflow.com/questions/12689304/ctypes-error-libdc1394-error-failed-to-initialize-libdc1394/26028597#26028597
 RUN ln /dev/null /dev/raw1394
+
+# add utility
+RUN apt-get install -y vim
+
+# ssh configuration files
+RUN mkdir /root/.ssh/ && touch /root/.ssh/authorized_keys
 
 # sshd
 # https://docs.docker.com/examples/running_ssh_service/
@@ -149,5 +132,37 @@ RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so
 ENV NOTVISIBLE "in users profile"
 RUN echo "export VISIBLE=now" >> /etc/profile
 
+# add caffe user
+RUN useradd -m -d /home/caffe -s /bin/bash caffe \
+ && echo "caffe:caffe" | chpasswd \
+ && mkdir /home/caffe/.ssh \
+ && chmod 700 /home/caffe/.ssh \
+ && cp /root/.ssh/authorized_keys /home/caffe/.ssh \
+ && chmod 600 /home/caffe/.ssh/authorized_keys \
+ && chown -R caffe:caffe /home/caffe/.ssh
+RUN echo "caffe ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+RUN echo 'export PATH=$PATH:/opt/caffe/.build_release/tools' >> /home/caffe/.bashrc
+RUN echo 'PYTHONPATH=$PYTHONPATH/opt/caffe/python' >> /home/caffe/.bashrc
+
+# various files are created by root. Change ownership
+RUN chown caffe:caffe -R /opt/caffe/
+
+# add chainer user
+RUN useradd -m -d /home/chainer -s /bin/bash chainer \
+ && echo "chainer:chainer" | chpasswd \
+ && mkdir /home/chainer/.ssh \
+ && chmod 700 /home/chainer/.ssh \
+ && cp /root/.ssh/authorized_keys /home/chainer/.ssh \
+ && chmod 600 /home/chainer/.ssh/authorized_keys \
+ && chown -R chainer:chainer /home/chainer/.ssh
+RUN echo "chainer ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+# setup chainer
+RUN pip install chainer
+USER chainer
+WORKDIR /home/chainer
+RUN git clone https://github.com/pfnet/chainer.git
+
+# sshd
 EXPOSE 22
 CMD ["/usr/sbin/sshd", "-D"]
