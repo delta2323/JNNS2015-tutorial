@@ -164,6 +164,7 @@ USER chainer
 WORKDIR /home/chainer
 RUN git clone https://github.com/pfnet/chainer.git
 
+USER root
 # sshd
 EXPOSE 22
 CMD ["/usr/sbin/sshd", "-D"]
