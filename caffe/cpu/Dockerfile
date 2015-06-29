@@ -118,8 +118,6 @@ RUN useradd -m -d /home/caffe -s /bin/bash caffe \
  && echo "caffe:caffe" | chpasswd \
  && mkdir /home/caffe/.ssh \
  && chmod 700 /home/caffe/.ssh \
- && cp /root/.ssh/authorized_keys /home/caffe/.ssh \
- && chmod 600 /home/caffe/.ssh/authorized_keys \
  && chown -R caffe:caffe /home/caffe/.ssh
 RUN echo "caffe ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 RUN echo 'export PATH=$PATH:/opt/caffe/.build_release/tools' >> /home/caffe/.bashrc
