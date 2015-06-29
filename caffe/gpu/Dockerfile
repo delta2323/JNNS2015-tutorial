@@ -1,8 +1,7 @@
 # modified from tleyden5iwx/caffe-gpu-master
 # https://registry.hub.docker.com/u/tleyden5iwx/caffe-gpu-master/
 
-# https://registry.hub.docker.com/u/tleyden5iwx/ubuntu-cuda/ 
-FROM tleyden5iwx/ubuntu-cuda
+FROM delta2323/ubuntu-cuda
 
 ENV PYTHONPATH /opt/caffe/python
 
