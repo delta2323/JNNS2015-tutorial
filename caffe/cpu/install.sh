@@ -11,7 +11,7 @@
 
 PYTHONPATH=/opt/caffe/python:$PYTHONPATH
 # Add caffe binaries to path
-PATH= $PATH:/opt/caffe/.build_release/tools
+PATH=$PATH:/opt/caffe/.build_release/tools
 
 # Get dependencies
 apt-get update
