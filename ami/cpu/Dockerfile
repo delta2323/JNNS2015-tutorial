@@ -162,7 +162,7 @@ RUN pip install scikit-learn
 RUN pip install chainer
 USER chainer
 WORKDIR /home/chainer
-RUN git clone -b 3519ec433e93807bf218ce4aacab7f210e0790bb https://github.com/pfnet/chainer.git # version 1.1.0
+RUN git clone -b v.1.1.0 https://github.com/pfnet/chainer.git # version 1.1.0
 
 USER root
 # sshd
